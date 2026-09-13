@@ -12,6 +12,16 @@ describe('parsePixelLength', () => {
     expect(parsePixelLength('612.5px')).toBe(612.5)
   })
 
+  it('converts the points docx-preview writes', () => {
+    // The library sizes every page from the document's own pgSz, whose unit is
+    // always pt. Reading "595.25pt" as 595 pixels understates an A4 page by a
+    // third, and the scale built on it leaves the page overflowing.
+    expect(parsePixelLength('595.25pt')).toBeCloseTo(793.67, 2)
+    expect(parsePixelLength('841.9pt')).toBeCloseTo(1122.53, 2)
+    // A point is 1/72in against a pixel's 1/96in.
+    expect(parsePixelLength('72pt')).toBeCloseTo(96, 5)
+  })
+
   it('rejects values that cannot size a page', () => {
     expect(parsePixelLength(null)).toBeNull()
     expect(parsePixelLength(undefined)).toBeNull()

@@ -17,16 +17,26 @@
  */
 
 /**
- * Read a CSS pixel length, rejecting anything that cannot size a page.
+ * Read a CSS length in device-independent pixels.
  *
- * @param value - a computed or inline length such as `"794px"`.
- * @returns the positive pixel count, or null when the value is absent, zero or
- * unparseable.
+ * docx-preview writes the page width from the document's own `pgSz`, which is
+ * expressed in points — `"595.25pt"` for A4. Parsing that as a bare number
+ * treats it as pixels and understates the page by a third (595 against a real
+ * 794), so the scale it produces is too large and the page still overruns. The
+ * unit is read here and converted, since only pixels compare with the space the
+ * pane offers.
+ *
+ * @param value - a CSS length such as `"794px"` or `"595.25pt"`.
+ * @returns the width in pixels, or null when it cannot size a page.
  */
 export function parsePixelLength(value: string | null | undefined): number | null {
   if (value === null || value === undefined || value === '') return null
   const parsed = Number.parseFloat(value)
   if (!Number.isFinite(parsed) || parsed <= 0) return null
+  const unit = /[a-z%]+/iu.exec(value.trim())?.[0].toLowerCase() ?? 'px'
+  // point is 1/72in and a CSS pixel is 1/96in, so a point is 96/72 of a pixel.
+  if (unit === 'pt') return parsed * (96 / 72)
+  // Anything else (px included) is already a length the comparison can use.
   return parsed
 }
 
