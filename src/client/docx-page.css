@@ -1,0 +1,38 @@
+/*
+ * Page fitting for the docx-preview surface.
+ *
+ * docx-preview writes every page at the width the document declares in its own
+ * pgSz (A4 is roughly 794px) and centres the pages inside a flex wrapper. A
+ * sidebar is narrower than that, so the page overruns the grey surround that the
+ * library paints behind it. The library exposes no scale option: ignoreWidth
+ * drops the declared width and reflows the text to the container, which loses
+ * the margins, line breaks and pagination that a preview exists to show.
+ *
+ * DocxView measures the rendered page against the pane and publishes the factor
+ * as a custom property, so the page box keeps its document size and the pane
+ * scales it. Scaling each page rather than the wrapper keeps the grey surround at
+ * the full pane width, with the scaled pages centred inside it.
+ *
+ * zoom, not transform: zoom takes part in layout, so the scroll range shrinks
+ * with the page instead of leaving the unscaled height behind as blank space
+ * below the last page.
+ *
+ * Plain .css rather than a module: these selectors must match docx-preview's own
+ * output, which the module transform would rename. The build inlines plain css
+ * unchanged through the same data-plugin-css pipeline.
+ */
+
+/* The pane owns the width; the library must not demand more than it has. */
+.docx-wrapper {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Pages keep the size their document declares until the fit factor scales them.
+   fit is 1 whenever the page already fits, so a narrow document is never
+   enlarged past its true scale. */
+.docx-wrapper > section.docx {
+  max-width: none;
+  margin-inline: auto;
+  zoom: var(--dsh-docx-fit, 1);
+}
