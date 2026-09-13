@@ -8,10 +8,12 @@
  * drops the declared width and reflows the text to the container, which loses
  * the margins, line breaks and pagination that a preview exists to show.
  *
- * DocxView measures the rendered page against the pane and publishes the factor
- * as a custom property, so the page box keeps its document size and the pane
- * scales it. Scaling each page rather than the wrapper keeps the grey surround at
- * the full pane width, with the scaled pages centred inside it.
+ * DocxView measures the rendered page against the wrapper's content box — the
+ * wrapper, not the pane, because the padding the library paints inside it is
+ * part of the space the page cannot use — and publishes the factor as a custom
+ * property. The page box keeps its document size and the wrapper scales it.
+ * Scaling each page rather than the wrapper keeps the grey surround at the full
+ * pane width, with the scaled pages centred inside it.
  *
  * zoom, not transform: zoom takes part in layout, so the scroll range shrinks
  * with the page instead of leaving the unscaled height behind as blank space
@@ -22,7 +24,9 @@
  * unchanged through the same data-plugin-css pipeline.
  */
 
-/* The pane owns the width; the library must not demand more than it has. */
+/* The wrapper owns the width the page may use; the library must not demand more
+   than the pane has. Its own padding stays, because the fit is measured against
+   the content box that padding leaves. */
 .docx-wrapper {
   max-width: 100%;
   box-sizing: border-box;

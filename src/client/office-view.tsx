@@ -15,11 +15,15 @@
  * `require` cannot load relative chunk URLs in the browser, so dynamic
  * import() collapses to a synchronous inline — see tsdown.config.ts).
  */
-import { useEffect, useRef, useState } from 'react'
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import { docxFitScale, parsePixelLength, wrapperContentWidth } from './docx-fit.ts'
 import { downloadUrl, mediaUrl, type SessionScope } from './urls.ts'
 import { t } from './locales.ts'
 import { xlsxWorkbookToUniver } from './xlsx-to-univer.ts'
 import css from './office.module.css'
+// The page-fitting rules must match docx-preview's own class names, so they load
+// as plain css: the module transform would rename the selectors.
+import './docx-page.css'
 // Univer's stylesheets ride the same dsh-css-inline pipeline as xterm's CSS
 // (one <style data-plugin-css> tag, idempotent). Static import so the styles
 // are present before the first .xlsx opens.
@@ -39,6 +43,28 @@ interface OfficeViewProps {
 }
 
 /**
+ * Fit the rendered page to the width the wrapper actually offers.
+ *
+ * The wrapper is the measurement source, not the pane: docx-preview paints its
+ * own 30px padding inside the wrapper, so a factor taken from the pane would be
+ * that much too generous and the page would still overrun. The page keeps the
+ * size its document declares and the factor is applied as `zoom` on the page,
+ * which takes part in layout — the scroll range shrinks with the page, where a
+ * transform would leave the unscaled height behind as blank space below the
+ * last page.
+ *
+ * @param host - the element docx-preview rendered into.
+ * @returns the fit factor, or 1 when nothing can be measured.
+ */
+function measurePageFit(host: HTMLElement): number {
+  const wrapper = host.querySelector('.docx-wrapper')
+  const page = host.querySelector<HTMLElement>('section.docx')
+  if (page === null) return 1
+  const pageWidth = parsePixelLength(page.style.width) ?? parsePixelLength(getComputedStyle(page).width)
+  return docxFitScale(pageWidth, wrapperContentWidth(wrapper))
+}
+
+/**
  * Render a .docx file via docx-preview. The library renders into a container
  * div (no canvas); images and styles are inlined. Unmounting clears the
  * container's innerHTML — docx-preview has no dispose API, but tearing down
@@ -50,6 +76,9 @@ export function DocxView(props: OfficeViewProps): JSX.Element {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [load, setLoad] = useState<LoadState>({ status: 'loading' })
   const [zoom, setZoom] = useState(100)
+  // Width fit, kept apart from the user's zoom so the slider stays a plain
+  // percentage of the page and the fit follows the pane on its own.
+  const [fit, setFit] = useState(1)
 
   useEffect(() => {
     let cancelled = false
@@ -57,6 +86,7 @@ export function DocxView(props: OfficeViewProps): JSX.Element {
     const wrap = wrapRef.current
     if (container === null || wrap === null) return
     setZoom(100)
+    setFit(1)
     void (async () => {
       try {
         const response = await fetch(mediaUrl(scope, path))
@@ -78,6 +108,9 @@ export function DocxView(props: OfficeViewProps): JSX.Element {
           experimental: false,
         })
         if (!cancelled) setLoad({ status: 'ready' })
+        // Measured after render: the page width only reaches the DOM once the
+        // library has written it.
+        if (!cancelled) setFit(measurePageFit(wrap))
       } catch (error) {
         if (!cancelled) {
           setLoad({ status: 'error', message: error instanceof Error ? error.message : String(error) })
@@ -104,6 +137,16 @@ export function DocxView(props: OfficeViewProps): JSX.Element {
     return () => { viewport.removeEventListener('wheel', onWheel) }
   }, [])
 
+  // A resized pane changes the width the wrapper offers, and the preview stays
+  // open while the user drags the sidebar, so re-fit on every size change.
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (wrap === null || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(() => { setFit(measurePageFit(wrap)) })
+    observer.observe(wrap)
+    return () => { observer.disconnect() }
+  }, [load.status])
+
   return (
     <div className={css.editorDocx}>
       <div className={css.editorDocxViewport} ref={viewportRef}>
@@ -114,7 +157,10 @@ export function DocxView(props: OfficeViewProps): JSX.Element {
             className={css.editorDocxWrap}
             ref={wrapRef}
             aria-label={title}
-            style={{ zoom: zoom / 100 }}
+            // The user's zoom scales the wrapper while the fit scales each page,
+            // so the grey surround always spans the pane and only the paper
+            // shrinks inside it (see docx-page.css).
+            style={{ zoom: zoom / 100, '--dsh-docx-fit': String(fit) } as CSSProperties}
           />
         )}
       </div>
