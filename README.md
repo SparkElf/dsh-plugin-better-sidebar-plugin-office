@@ -1,10 +1,17 @@
+> **Redistribution notice.** This is SparkElf's redistribution of
+> [`@huanlin/dsh-plugin-better-sidebar-plugin-office`](https://github.com/HuanLinOTO/dsh-plugin-better-sidebar-plugin-office)
+> by Huanlin, published as `@sparkelf/dsh-plugin-better-sidebar-office` under the same
+> AGPL-3.0 licence. It carries the document-font and page-fitting fixes for the DOCX
+> preview. See [ATTRIBUTION.md](./ATTRIBUTION.md) for the origin, the licence terms,
+> and exactly what this build changes.
+
 <p align="center">
   <a href="https://dshfind.com/zh/plugins/huanlinoto/dsh-plugin-better-sidebar-plugin-office"><img src="https://dshfind.com/api/card/huanlinoto/dsh-plugin-better-sidebar-plugin-office?lang=zh" alt="dsh-plugin-better-sidebar-plugin-office card"></a>
 </p>
 
 # dsh-better-sidebar-plugin-office
 
-[![npm version](https://img.shields.io/npm/v/@huanlin/dsh-plugin-better-sidebar-plugin-office)](https://www.npmjs.com/package/@huanlin/dsh-plugin-better-sidebar-plugin-office)
+[![npm version](https://img.shields.io/npm/v/@sparkelf/dsh-plugin-better-sidebar-office)](https://www.npmjs.com/package/@sparkelf/dsh-plugin-better-sidebar-office)
 
 DSH web 插件：为 better-sidebar 的编辑器提供 Office 三件套文件预览（`.docx` / `.xlsx` / `.pptx`）。
 
@@ -49,7 +56,7 @@ pnpm run build       # tsdown 双产物（lib/index.js + lib/client.js）
 
 ```powershell
 # 从 npm 安装（推荐）：
-dsh plugin --profile web add @huanlin/dsh-plugin-better-sidebar-plugin-office
+dsh plugin --profile web add @sparkelf/dsh-plugin-better-sidebar-office
 
 # 本地开发（link: 热更新）
 dsh plugin --profile web add "link:D:/Projects/deepseek-harness/dsh-better-sidebar-plugin-office"
@@ -68,7 +75,7 @@ dsh plugin --profile web add "link:D:/Projects/deepseek-harness/dsh-better-sideb
 |--------|------|------|
 | 类型门禁 | `pnpm run typecheck` | 0 错误 |
 | 单元测试 | `pnpm test` | 全部通过 |
-| 构建 | `pnpm run build` | `lib/client.js` 生成，`window.__ModuleLoader__.load({ id: '@huanlin/dsh-plugin-better-sidebar-plugin-office', ... })` 包裹 |
+| 构建 | `pnpm run build` | `lib/client.js` 生成，`window.__ModuleLoader__.load({ id: '@sparkelf/dsh-plugin-better-sidebar-office', ... })` 包裹 |
 | bundle 纯度 | 产物中搜索 `node:` 或 `require("fs")` | 不应出现 Node builtin 引用 |
-| profile 可见 | `Test-Path ~/.dsh/profiles/web/node_modules/@huanlin/dsh-plugin-better-sidebar-plugin-office/lib/client.js` | True |
+| profile 可见 | `Test-Path ~/.dsh/profiles/web/node_modules/@sparkelf/dsh-plugin-better-sidebar-office/lib/client.js` | True |
 | 插件加载 | 重启 `dsh web` + 硬刷新后侧边栏打开 Office 文件 | 预览正常渲染 |

@@ -1,6 +1,10 @@
 {
-  "name": "@huanlin/dsh-plugin-better-sidebar-plugin-office",
-  "version": "0.2.0",
+  "name": "@sparkelf/dsh-plugin-better-sidebar-office",
+  "version": "0.2.1",
+  "homepage": "https://github.com/HuanLinOTO/dsh-plugin-better-sidebar-plugin-office",
+  "bugs": {
+    "url": "https://github.com/SparkElf/dsh-plugin-better-sidebar-plugin-office/issues"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -24,7 +28,8 @@
   "files": [
     "lib/",
     "!lib/*.map",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "ATTRIBUTION.md"
   ],
   "dsh": {
     "bundle": {
