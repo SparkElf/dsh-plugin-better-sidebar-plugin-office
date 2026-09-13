@@ -17,6 +17,7 @@
  */
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { docxFitScale, parsePixelLength, wrapperContentWidth } from './docx-fit.ts'
+import { installViewerFonts } from './viewer-fonts.ts'
 import { downloadUrl, mediaUrl, type SessionScope } from './urls.ts'
 import { t } from './locales.ts'
 import { xlsxWorkbookToUniver } from './xlsx-to-univer.ts'
@@ -95,6 +96,10 @@ export function DocxView(props: OfficeViewProps): JSX.Element {
           throw new Error(`HTTP ${response.status}`)
         }
         const buf = await response.arrayBuffer()
+        if (cancelled) return
+        // Fonts first: docx-preview measures text while it renders, so a face that
+        // arrives later reflows the page it already laid out.
+        await installViewerFonts()
         if (cancelled) return
         // docx-preview ships its own CSS through the className option; the
         // wrapper div scopes its render output.

@@ -1,6 +1,7 @@
 /** High-fidelity browser-native PPTX preview with slide navigation. */
 import { useEffect, useRef, useState } from 'react'
 import { downloadUrl, mediaUrl, type SessionScope } from './urls.ts'
+import { installViewerFonts } from './viewer-fonts.ts'
 import { t } from './locales.ts'
 import css from './office.module.css'
 
@@ -30,6 +31,10 @@ export function PptxView(props: { scope: SessionScope; path: string; title: stri
         const response = await fetch(mediaUrl(scope, path), { signal: controller.signal })
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const bytes = await response.arrayBuffer()
+        if (controller.signal.aborted) return
+        // The renderer draws text with the metrics it measures, so the document
+        // fonts load before it opens the deck.
+        await installViewerFonts()
         if (controller.signal.aborted) return
         const { PptxViewer, RECOMMENDED_ZIP_LIMITS } = await import('@aiden0z/pptx-renderer')
         if (controller.signal.aborted) return
