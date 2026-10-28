@@ -1,5 +1,5 @@
 /**
- * Client half of @huanlin/dsh-plugin-better-sidebar-plugin-office: registers
+ * Client half of @sparkelf/dsh-plugin-better-sidebar-office: registers
  * the three Office file viewers (docx / xlsx / pptx) through better-sidebar's
  * `ctx.betterSidebar.registerFileViewer`. The descriptors are identical in
  * shape to the built-ins they replace (same viewer ids, exts, mediaUrl
@@ -10,10 +10,10 @@
  * live in THIS bundle only, keeping better-sidebar's own client bundle small.
  */
 import { createElement } from 'react'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-// Type-only: pulls better-sidebar's `declare module 'cordis'` Context merge
-// (ctx.betterSidebar) and the FileViewerDescriptor type. Erased at build time,
-// so it never hits the client-bundle purity gate.
+import type { Context } from '@deepseek-ai/cordis'
+// Type-only: pulls better-sidebar's `declare module '@deepseek-ai/cordis'`
+// Context merge (ctx.betterSidebar) and the FileViewerDescriptor type. Erased
+// at build time, so it never hits the client-bundle purity gate.
 import type {} from 'dsh-better-sidebar/client'
 import type { FileViewerDescriptor } from 'dsh-better-sidebar'
 import { DocxView, XlsxView } from './office-view.tsx'
@@ -77,7 +77,7 @@ export function officeViewers(): readonly FileViewerDescriptor[] {
  * Client plugin body.
  * @param ctx - the client cordis context (betterSidebar + locale services).
  */
-export function apply(ctx: ClientContext): void {
+export function apply(ctx: Context): void {
   // The viewer copy follows the DSH i18n system: attach the locale service
   // so the module-level t()/zh-en chain resolves the Host-backed language
   // preference, register the plugin's dictionaries into the shared locale

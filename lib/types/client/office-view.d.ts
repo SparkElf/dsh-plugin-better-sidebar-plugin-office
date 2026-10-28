@@ -1,4 +1,5 @@
 import { type SessionScope } from './urls.ts';
+import './docx-page.css';
 import '@univerjs/preset-sheets-core/lib/index.css';
 /** Shared props. */
 interface OfficeViewProps {

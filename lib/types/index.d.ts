@@ -1,5 +1,5 @@
 /**
- * @huanlin/dsh-plugin-better-sidebar-plugin-office, node half.
+ * @sparkelf/dsh-plugin-better-sidebar-office, node half.
  *
  * A stub. Every feature this plugin provides — the .docx/.xlsx/.pptx file
  * previewers — lives in the browser half, because each one renders inside
@@ -9,7 +9,7 @@
  * a size/encryption probe route) has somewhere to land; for now, applying it
  * does nothing.
  *
- * @module @huanlin/dsh-plugin-better-sidebar-plugin-office
+ * @module @sparkelf/dsh-plugin-better-sidebar-office
  */
 /** Plugin configuration; intentionally empty — every knob lives client-side. */
 export interface Config {

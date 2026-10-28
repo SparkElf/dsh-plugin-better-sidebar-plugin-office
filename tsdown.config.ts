@@ -1,5 +1,5 @@
 /**
- * tsdown build for @huanlin/dsh-plugin-better-sidebar-plugin-office: the host
+ * tsdown build for @sparkelf/dsh-plugin-better-sidebar-office: the host
  * stub (lib/index.js, ESM node) plus one browser client bundle
  * (lib/client.js, CJS closure factory).
  *
@@ -32,7 +32,7 @@ const require = createRequire(import.meta.url)
 const REPOSITORY_ROOT = fileURLToPath(new URL('.', import.meta.url))
 
 /** Bundle id (= package name; the client-modules compose keys on it). */
-const CLIENT_ID = '@huanlin/dsh-plugin-better-sidebar-plugin-office'
+const CLIENT_ID = '@sparkelf/dsh-plugin-better-sidebar-office'
 
 /** Module specifiers the web shell shares into the frozen module table. */
 const CLIENT_EXTERNALS = [
@@ -41,8 +41,6 @@ const CLIENT_EXTERNALS = [
   'react-dom',
   'react-dom/client',
   '@deepseek-ai/cordis',
-  '@deepseek-ai/dsh-client-runtime',
-  '@deepseek-ai/dsh-client-runtime/client',
   '@deepseek-ai/dsh-client-ui-primitives',
   '@deepseek-ai/dsh-client-ui-primitives/client',
   '@deepseek-ai/dsh-client-ui-slots',
